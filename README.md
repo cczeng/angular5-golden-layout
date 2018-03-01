@@ -1,27 +1,142 @@
-# GoldenLayoutDemo
+# Golden-layout in Angular5
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.7.
+这是一个使用Angular2+开发的DEMO,这个项目中引入:
 
-## Development server
+- [Angular Meterial](https://material.angular.io/)
+- [GoldenLayout](http://golden-layout.com/)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+**目录**
 
-## Build
+1. [引入Golden-layout](#improt)
+1. [BUG](#bug)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
-## Running unit tests
+<a id="improt"></a>
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### 引入 Golden-layout
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+index.html:
 
-## Further help
+```javascript
+<link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
+<link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-light-theme.css" />
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"</script>
+<script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
+```
+
+
+
+Modules.ts:
+
+```javascript
+import { MapboxComponent } from './mapbox/mapbox.component';
+import { GroupComponent } from './group/group.component';
+import { UsersComponent } from './users/users.component';
+
+@NgModule({
+  ...
+  declarations: [
+    GroupComponent,
+    MapboxComponent,
+    UsersComponent,
+  ],
+  entryComponents: [
+    GroupComponent,
+    MapboxComponent,
+    UsersComponent
+  ]
+})
+```
+
+
+
+Home.component.ts:
+
+
+
+```javascript
+import { Component, OnInit, ViewContainerRef, OnDestroy, ElementRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import { MapboxComponent } from './mapbox/mapbox.component';
+import { GroupComponent } from './group/group.component';
+import { UsersComponent } from './users/users.component';
+
+declare var GoldenLayout: any;
+declare var $: any;
+
+export class HomeComponent implements OnInit {
+  private config: any;
+  private layout: any;
+	
+  constructor(
+    private el: ElementRef,
+    private viewContainer: ViewContainerRef,
+    private componentFactoryResolver: ComponentFactoryResolver
+  ) {
+    this.config = {
+      settings: {
+        selectionEnabled: true
+      },
+      content: [{
+        type: 'row',
+        content: [{
+          type: 'component',
+          componentName: 'group',
+          componentState: {
+            message: 'Top Left',
+            label: 'Group'
+          }
+        }, {
+          type: 'column',
+          content: [{
+            type: 'component',
+            componentName: 'mapbox',
+            componentState: {
+              message: 'Top Right',
+              label: 'Map'
+            }
+          }, {
+            type: 'component',
+            componentName: 'mapbox',
+            componentState: {
+              message: 'Bottom Right',
+              label: 'Map'
+            }
+          }]
+        }]
+      }]
+    };
+  }
+  
+  ngOnInit() {
+    this.layout = new GoldenLayout(this.config, $(this.el.nativeElement).find("#layout"));
+
+	// 注册到golden-layout
+    this.layout.registerComponent('group', (container, componentState) => {
+      let group = this.componentFactoryResolver.resolveComponentFactory(GroupComponent);
+      let groupRef = this.viewContainer.createComponent(group);
+
+      container.getElement().append($(groupRef.location.nativeElement));
+    });
+
+	// 注册到golden-layout
+    this.layout.registerComponent('mapbox', (container, componentState) => {
+      let mapbox = this.componentFactoryResolver.resolveComponentFactory(MapboxComponent);
+      let mapboxRef = this.viewContainer.createComponent(mapbox);
+
+      container.getElement().append($(mapboxRef.location.nativeElement));
+    });
+
+    this.layout.init();
+  }
+}
+```
+
+<a id="bug"></a>
+
+### bug
+
+1. 添加不了没注册的组件，只能添加已经注册过的组件
