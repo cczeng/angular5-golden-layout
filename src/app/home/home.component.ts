@@ -103,14 +103,6 @@ export class HomeComponent implements OnInit {
     // 不创建新的,而是直接插入.否则拖动面板的时候会重新绘制。导致多出窗口。
     // this.layout.createDragSource($(this.el.nativeElement).find("#layout"), newConfig);
 
-    if (this.layout.getComponent(com.name)) {
-      this.layout.registerComponent(com.name, (container, componentState) => {
-        let users = this.componentFactoryResolver.resolveComponentFactory(UsersComponent);
-        let usersRef = this.viewContainer.createComponent(users);
-
-        container.getElement().append($(usersRef.location.nativeElement));
-      });
-    }
     this.layout.root.contentItems[0].addChild(newConfig);
   }
 }
