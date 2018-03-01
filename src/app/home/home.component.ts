@@ -46,26 +46,9 @@ export class HomeComponent implements OnInit {
           type: 'component',
           componentName: 'group',
           componentState: {
-            message: 'Top Left',
-            label: 'Group'
+            message: 'Bottom Right',
+            label: 'group'
           }
-        }, {
-          type: 'column',
-          content: [{
-            type: 'component',
-            componentName: 'mapbox',
-            componentState: {
-              message: 'Top Right',
-              label: 'Map'
-            }
-          }, {
-            type: 'component',
-            componentName: 'mapbox',
-            componentState: {
-              message: 'Bottom Right',
-              label: 'Map'
-            }
-          }]
         }]
       }]
     };
@@ -88,6 +71,13 @@ export class HomeComponent implements OnInit {
       container.getElement().append($(mapboxRef.location.nativeElement));
     });
 
+    this.layout.registerComponent('users', (container, componentState) => {
+      let users = this.componentFactoryResolver.resolveComponentFactory(UsersComponent);
+      let usersRef = this.viewContainer.createComponent(users);
+
+      container.getElement().append($(usersRef.location.nativeElement));
+    });
+
     this.layout.init();
   }
 
@@ -99,10 +89,9 @@ export class HomeComponent implements OnInit {
         message: 'Bottom Right',
         label: com.name
       }
-    }
+    };
     // 不创建新的,而是直接插入.否则拖动面板的时候会重新绘制。导致多出窗口。
     // this.layout.createDragSource($(this.el.nativeElement).find("#layout"), newConfig);
-
     this.layout.root.contentItems[0].addChild(newConfig);
   }
 }
