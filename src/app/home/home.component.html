@@ -1,0 +1,12 @@
+<mat-grid-list cols="4" rowHeight="100px">
+    <mat-grid-tile [colspan]="title.cols" [rowspan]="title.rows" [style.background]="title.color">
+        {{title.text}}
+    </mat-grid-tile>
+</mat-grid-list>
+<div style="padding:1rem;">
+    <button style="margin-left:1rem;" *ngFor="let item of addMenuItem" mat-raised-button color="primary" (click)="addLayout(item)">Add {{item.name | uppercase}}</button>
+</div>
+<mat-card>
+    <div id="layout" style="width: 100%; height: 600px;"></div>
+    <div id="layoutContainer"></div>
+</mat-card>
